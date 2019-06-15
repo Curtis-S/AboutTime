@@ -47,32 +47,43 @@ class ViewController: UIViewController {
     var quizManager = QuizManager()
     let vc = ScoreViewController()
     var timer = Timer()
-    var seconds = 0
+    var seconds = 60
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        
+        roundLabels()
         startNewGame()
-
         
+
     }
     
     //helpers
+    
+    func roundLabels(){
+        choiceOne.layer.cornerRadius = 3
+        choiceOne.layer.maskedCorners = [.layerMinXMaxYCorner,.layerMinXMinYCorner]
+        choiceTwo.layer.cornerRadius = 3
+        choiceTwo.layer.maskedCorners = [.layerMinXMaxYCorner,.layerMinXMinYCorner]
+        choiceThree.layer.cornerRadius = 3
+        choiceThree.layer.maskedCorners = [.layerMinXMaxYCorner,.layerMinXMinYCorner]
+        choiceFour.layer.cornerRadius = 3
+        choiceFour.layer.maskedCorners = [.layerMinXMaxYCorner,.layerMinXMinYCorner]
+    }
     
     func runTimer(){
         timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(ViewController.updateTimer), userInfo: nil, repeats: true)
     }
     
     @objc func updateTimer(){
-        seconds+=1
+        seconds-=1
         timerLabel.text = String(seconds)
         
-        if seconds == 60 && quizManager.currentRound > 6 {
+        if seconds == 0 && quizManager.currentRound > 6 {
             answerRound()
             
-        } else if seconds == 60 {
+        } else if seconds == 0 {
          answerRound()
          
         }
@@ -163,8 +174,11 @@ class ViewController: UIViewController {
     }
     
     func answerRound(){
+        self.timerLabel.isHidden = true
+        self.nextRoundButton.isHidden = false
         timer.invalidate()
-        self.seconds = 0 
+        self.seconds = 60
+        self.timerLabel.text = String(seconds)
         let response = quizManager.checkAnswers(firstAnswer: self.choiceOne.text!, secondAnswer: self.choiceTwo.text!, thirdtAnswer: self.choiceThree.text!, forthAnswer: self.choiceFour.text!)
         if response == true {
                quizManager.score += 1
@@ -173,8 +187,7 @@ class ViewController: UIViewController {
  
             self.nextRoundButton.setBackgroundImage(UIImage(named: "next_round_fail"), for: .normal)
         }
-        self.timerLabel.isHidden = true
-        self.nextRoundButton.isHidden = false
+      
         
         
     }
